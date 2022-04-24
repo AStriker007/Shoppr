@@ -19,6 +19,5 @@ router.post('/signup', [body('name').trim().exists({ checkFalsy: true })
 router.post('/login',authControllers.login)   
 router.get('/google',authControllers.redirect)
 router.get('/google/redirect',authControllers.generateInfo)
-router.post('/forgotPassword',authControllers.forgotPassword)
             
 module.exports = router
