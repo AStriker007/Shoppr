@@ -15,7 +15,7 @@ const message=error.message;
 const data=error.data;
 return res.status(status).json({"message":message,"data":data})
 });
-mongoose.connect(process.env.MONGO_URL,{ useMongoClient:true }).then(result=>{
+mongoose.connect(`${process.env.MONGO_URL}`,{ useNewUrlParser: true, useUnifiedTopology: true}).then(result=>{
 console.log("Connected")    
 app.listen(process.env.PORT,()=>{
     console.log(`Listening to port ${process.env.PORT}`)
