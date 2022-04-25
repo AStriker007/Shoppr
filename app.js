@@ -15,7 +15,7 @@ const message=error.message;
 const data=error.data;
 return res.status(status).json({"message":message,"data":data})
 });
-mongoose.connect('mongodb+srv://Aniruddh:iamalittleteapot@cluster0.vqv7t.mongodb.net/myFirstDatabase?retryWrites=true&w=majority',{ useNewUrlParser: true, useUnifiedTopology: true}).then(result=>{
+mongoose.connect('mongodb+srv://Aniruddh:iamalittleteapot@cluster0.vqv7t.mongodb.net/myFirstDatabase?retryWrites=true&w=majority').then(result=>{
 console.log("Connected")    
 app.listen(process.env.PORT,()=>{
     console.log(`Listening to port ${process.env.PORT}`)
