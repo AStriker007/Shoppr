@@ -96,7 +96,7 @@ exports.redirect=(req,res,next)=>{
 }
 exports.generateInfo=(req,res,next)=>{
     const urlParams = qs.parse(req.url);
- let DATA;
+ let DATA,USERDOC;
     const code=urlParams['/google/redirect?code']
     googleConfig.getAccessTokenFromCode(code).then(access_token=>{
         return googleConfig.getGoogleUserInfo(access_token)
@@ -115,17 +115,30 @@ exports.generateInfo=(req,res,next)=>{
             })
             return user.save()
         }
+        USERDOC=userDoc
     
     }).then(result=>{
-        //     const access=jwt.sign({
-        //     id:result._id
-        // },process.env.ACCESS,{expiresIn:'900s'})
-        // const refresh=jwt.sign({
-        //     id:result._id
-        // },process.env.REFRESH,{expiresIn:'1d'})
+        if(result)
+        {
+            const access=jwt.sign({
+            id:result._id
+        },process.env.ACCESS,{expiresIn:'900s'})
+        const refresh=jwt.sign({
+            id:result._id
+        },process.env.REFRESH,{expiresIn:'1d'})
     
-        // res.status(200).json({message:'logged in',access_token:access,refresh_token:refresh})
-            console.log(result)
+        res.status(200).json({message:'logged in',access_token:access,refresh_token:refresh})
+    }
+    else{
+        const access=jwt.sign({
+            id:USERDOC._id
+        },process.env.ACCESS,{expiresIn:'900s'})
+        const refresh=jwt.sign({
+            id:USERDOC._id
+        },process.env.REFRESH,{expiresIn:'1d'})
+    
+        res.status(200).json({message:'logged in',access_token:access,refresh_token:refresh})
+    }
     })
     .catch(err=>{
         if(!err.statusCode){
