@@ -102,28 +102,31 @@ exports.generateInfo=(req,res,next)=>{
         return googleConfig.getGoogleUserInfo(access_token)
     }).then(data=>{
         DATA=data
-        return User.findOne({email:data.email})
-    }).then(userDoc=>{
+        res.json({data:DATA})
+        //return User.findOne({email:data.email})
+    })
+    // .then(userDoc=>{
         
-        if(!userDoc){
-            const user=new User({
-                name:DATA.name,
-                email:DATA.email,
-                password:""
-            })
-            return user.save()
-        }
+    //     if(!userDoc){
+    //         const user=new User({
+    //             name:DATA.name,
+    //             email:DATA.email,
+    //             password:""
+    //         })
+    //         return user.save()
+    //     }
         
-    }).then(result=>{
-            const access=jwt.sign({
-            id:result._id
-        },process.env.ACCESS,{expiresIn:'900s'})
-        const refresh=jwt.sign({
-            id:result._id
-        },process.env.REFRESH,{expiresIn:'1d'})
+    // }).then(result=>{
+    //         const access=jwt.sign({
+    //         id:result._id
+    //     },process.env.ACCESS,{expiresIn:'900s'})
+    //     const refresh=jwt.sign({
+    //         id:result._id
+    //     },process.env.REFRESH,{expiresIn:'1d'})
     
-        res.status(200).json({message:'logged in',access_token:access,refresh_token:refresh})
-    }).catch(err=>{
+    //     res.status(200).json({message:'logged in',access_token:access,refresh_token:refresh})
+    // })
+    .catch(err=>{
         if(!err.statusCode){
             err.statusCode=500
         }
