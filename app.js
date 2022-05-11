@@ -4,6 +4,8 @@ const dotenv =require('dotenv')
 dotenv.config();
 const app = express()
 const authRouter=require('./routes/auth')
+const multer =require('multer')
+const upload=multer({dest:'uploads/'})
 app.use(express.json())
 
 app.use('/auth',authRouter)

@@ -147,3 +147,88 @@ exports.generateInfo=(req,res,next)=>{
         next(err)
     });    
 }
+
+exports.forgotPassword=(req,res,next)=>{
+const email=req.body.email;
+User.findOne({email:email}).then(userDoc=>{
+    if(!userDoc){
+        const error = new Error('Email doesnot exist')
+        error.statusCode=401;
+        throw error;
+    }
+    const otp=otpGenerator.generate(6, { upperCaseAlphabets: false});
+        const OTP=new otpSchema({  email:email,
+            otp:otp,
+            expiresIn:new Date().getTime()+300000})
+           return OTP.save()
+      
+}).then(result=>{
+    return transporter.sendMail({
+        to:result.email,
+        from:'aniruddh2010020@akgec.ac.in',
+        subject:'OTP for password change',
+        html:`<h1>Your otp is ${result.otp}</h1>`
+    })
+}).then(result=>{
+    res.json({message:'OTP sent',email:email})
+}).catch(err=>{
+    if(!err.statusCode){
+        err.statusCode=500
+    }
+    next(err)
+})
+}
+
+exports.enterOtp=(req,res,next)=>{
+const email=req.body.email;
+const otp=req.body.otp;
+otpSchema.find({email:email}).then(otpArray=>{
+    const len=otpArray.length
+    const latestOtpObj=otpArray[len-1]
+    const latestOtp=latestOtpObj.otp
+    if(otp==latestOtp){
+        if(new Date().getTime()<=latestOtpObj.expiresIn){
+            //Redirect to set new password page
+        res.json({message:'Otp matched'})
+        }
+        else{
+        const error = new Error('Otp Expired')
+        error.statusCode=401;
+        throw error;
+        }
+    }
+    else{
+        const error = new Error('Wrong Otp')
+        error.statusCode=401;
+        throw error;  
+    }
+}).catch(err=>{
+    if(!err.statusCode){
+        err.statusCode=500
+    }
+    next(err)
+})
+}
+
+exports.resetPassword=(req,res,next)=>{
+const email=req.body.email
+const password=req.body.password
+User.findOne({email:email}).then(userDoc=>{
+    if(!userDoc){
+        const error = new Error('Email doesnot exist')
+        error.statusCode=401;
+        throw error;
+    }
+   return bcrypt.hash(password,12)
+    }).then(hash=>{
+       return User.updateOne({email:email},{$set:{password:hash}})
+    }).then(result=>{
+        res.json({message:'Password updated'})
+        //redirect to login
+    }).catch(err=>{
+        if(!err.statusCode){
+            err.statusCode=500
+        }
+        next(err)
+    })
+}
