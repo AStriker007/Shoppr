@@ -4,18 +4,24 @@ const dotenv =require('dotenv')
 dotenv.config();
 const app = express()
 const authRouter=require('./routes/auth')
-const multer =require('multer')
-const upload=multer({dest:'uploads/'})
+const adminRouter=require('./routes/admin')
 app.use(express.json())
 
 app.use('/auth',authRouter)
+app.use('/admin',adminRouter)
 
 app.use((error,req,res,next)=>{
 console.log(error)
 const status=error.statusCode;
 const message=error.message;
 const data=error.data;
-return res.status(status).json({"message":message,"data":data})
+if(data)
+{
+    return res.status(status).json({"message":message,"data":data})
+}
+else{
+    return res.status(status).json({"message":message})
+}
 });
 mongoose.connect(process.env.MONGO_URL).then(result=>{
 console.log("Connected")    
