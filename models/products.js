@@ -21,6 +21,26 @@ price:{
     type:Number,
     required:[true,'Please enter price']
 },
+rating:{
+    type:Number
+},
+reviews:[
+    {
+        userID:{
+            type:mongoose.Schema.ObjectId,
+            ref:'User',
+            required:true
+        },
+        rating:{
+            type:Number,
+            required:true
+        },
+        review:{
+            type:Number,
+            required:true
+        }
+    }
+],
 images:{
     type:[
     {
@@ -42,11 +62,6 @@ validate: [arrayLimit, 'exceeds the limit of 3']
 }
 )
 
-// productSchema.path('images').validate(function (value) {
-//     if (value.size > 3) {
-//       throw new Error("size can't be greater than 3!");
-//     }
-//   });
 function arrayLimit(val) {
     return val.length <= 3;
   }
